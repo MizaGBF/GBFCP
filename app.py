@@ -15,12 +15,12 @@ import logging
 app = FastAPI()
 etag = None
 if "-debug" not in sys.argv:
-    origins = ["https://mizagbf.github.io"]
+    origin = "https://mizagbf.github.io"
 else:
-    origins = ["*"]
+    origin = "*"
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[origin],
     allow_credentials=True,
     allow_methods=["get"],
     allow_headers=["*"],
@@ -110,11 +110,11 @@ async def process_normal(subpath : str, if_none_match: str | None = Header(defau
         data = await gbfcp.getAsset(subpath)
         if data is not None:
             if subpath.endswith(".js"):
-                return StreamingResponse(data, media_type="application/javascript", headers={"ETag": etag, "Cache-Control": "public, max-age=2678400, stale-if-error=86400"})
+                return StreamingResponse(data, media_type="application/javascript", headers={"ETag": etag, "Cache-Control": "public, max-age=2678400, stale-if-error=86400", "Access-Control-Allow-Origin":origin})
             elif subpath.endswith(".png"):
-                return StreamingResponse(data, media_type="image/png", headers={"ETag": etag, "Cache-Control": "public, max-age=2678400, stale-if-error=86400"})
+                return StreamingResponse(data, media_type="image/png", headers={"ETag": etag, "Cache-Control": "public, max-age=2678400, stale-if-error=86400", "Access-Control-Allow-Origin":origin})
             elif subpath.endswith(".jpg"):
-                return StreamingResponse(data, media_type="image/jpeg", headers={"ETag": etag, "Cache-Control": "public, max-age=2678400, stale-if-error=86400"})
+                return StreamingResponse(data, media_type="image/jpeg", headers={"ETag": etag, "Cache-Control": "public, max-age=2678400, stale-if-error=86400", "Access-Control-Allow-Origin":origin})
         raise HTTPException(
             status_code=404,
             detail="Item not found"
